@@ -1,0 +1,19 @@
+{
+  "name": "ebarimt-check-server",
+  "version": "1.0.0",
+  "description": "",
+  "main": "prog.js",
+  "scripts": {
+    "start": "node prog.js",
+    "dev": "nodemon node prog.js"
+  },
+  "dependencies": {
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.5",
+    "express": "^4.21.1",
+    "mysql2": "^3.11.4"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.7"
+  }
+}
