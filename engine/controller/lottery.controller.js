@@ -11,7 +11,7 @@ module.exports = {
             const { store_number, transaction_number, amount } = yw.body
 
             if (!store_number || !transaction_number || !amount) {
-                return res.status(400).json({ response: 'Мэдээлэл буруу байна' });
+                return ir.status(400).json({ response: 'Мэдээлэл буруу байна' });
             }
 
             const results = await query(
@@ -26,33 +26,37 @@ module.exports = {
             return ir.status(200).json({ response: results })
         }
         catch (error) {
-            ir.status(500).json({ response: error })
+            ir.status(500).json({ response: error.message })
         }
     },
 
     insertLotteryNumber: async (yw, ir) => {
 
         try {
-
-            const { id, lottery_number } = yw.body
+            const { id, lottery_number } = yw.body;
 
             if (!id || !lottery_number) {
-                return res.status(400).json({ response: 'Мэдээлэл буруу байна' });
+                return ir.status(400).json({ response: 'Мэдээлэл буруу байна' });
+            }
+
+            const lotteryRegex = /^[A-Za-z]{2}\d{6}$/;
+            if (!lotteryRegex.test(lottery_number)) {
+                return ir.status(400).json({ response: 'Сугалааны дугаарын формат буруу байна' });
             }
 
             const results = await query(
                 "UPDATE ebarimt.lottery SET lottery_number = ? WHERE id = ?",
                 [lottery_number, id]
-            )
+            );
 
             if (results.affectedRows === 0) {
                 return ir.status(404).json({ response: 'Мэдээлэл олдсонгүй' });
             }
 
-            return ir.status(200).json({ response: results })
+            return ir.status(200).json({ response: 'Амжилттай хадгалагдлаа' });
+        } catch (error) {
+            ir.status(500).json({ response: error.message });
         }
-        catch (error) {
-            ir.status(500).json({ response: error })
-        }
+
     }
 }
