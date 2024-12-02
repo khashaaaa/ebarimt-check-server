@@ -1,5 +1,8 @@
-const Router = require('express')
-const { checkLotteryNumber, insertLotteryNumber } = require('../controller/lottery.controller')
+const Router = require("express")
+const {
+	checkLotteryNumber,
+	insertLotteryNumber,
+} = require("../controller/lottery.controller")
 
 const LotteryCheckRouter = Router()
 

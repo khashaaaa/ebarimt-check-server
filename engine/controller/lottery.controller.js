@@ -1,62 +1,63 @@
-const util = require('util')
-const { connector } = require('../config/connector')
+const util = require("util")
+const { connector } = require("../config/connector")
 const query = util.promisify(connector.query).bind(connector)
 
 module.exports = {
+	checkLotteryNumber: async (yw, ir) => {
+		try {
+			const {
+				store_number,
+				transaction_number,
+				amount,
+				is_organization,
+			} = yw.body
 
-    checkLotteryNumber: async (yw, ir) => {
+			if (!store_number || !transaction_number || !amount) {
+				return ir.status(400).json({ response: "Мэдээлэл дутуу байна" })
+			}
 
-        try {
+			const results = await query(
+				"SELECT * FROM ebarimt.lottery WHERE store_number = ? AND transaction_number = ? AND amount = ? AND is_organization = ? LIMIT 1",
+				[store_number, transaction_number, amount, is_organization]
+			)
 
-            const { store_number, transaction_number, amount } = yw.body
+			if (results.length === 0) {
+				return ir.status(404).json({ response: "Мэдээлэл олдсонгүй" })
+			}
 
-            if (!store_number || !transaction_number || !amount) {
-                return ir.status(400).json({ response: 'Мэдээлэл буруу байна' });
-            }
+			return ir.status(200).json({ response: results })
+		} catch (error) {
+			ir.status(500).json({ response: error.message })
+		}
+	},
 
-            const results = await query(
-                "SELECT * FROM ebarimt.lottery WHERE store_number = ? AND transaction_number = ? AND amount = ? LIMIT 1",
-                [store_number, transaction_number, amount]
-            )
+	insertLotteryNumber: async (yw, ir) => {
+		try {
+			const { id, lottery_number } = yw.body
 
-            if (results.length === 0) {
-                return ir.status(404).json({ response: 'Мэдээлэл олдсонгүй' });
-            }
+			if (!id || !lottery_number) {
+				return ir.status(400).json({ response: "Мэдээлэл буруу байна" })
+			}
 
-            return ir.status(200).json({ response: results })
-        }
-        catch (error) {
-            ir.status(500).json({ response: error.message })
-        }
-    },
+			const lotteryRegex = /^[A-Za-z]{2}\d{6}$/
+			if (!lotteryRegex.test(lottery_number)) {
+				return ir
+					.status(400)
+					.json({ response: "Сугалааны дугаарын формат буруу байна" })
+			}
 
-    insertLotteryNumber: async (yw, ir) => {
+			const results = await query(
+				"UPDATE ebarimt.lottery SET lottery_number = ? WHERE id = ?",
+				[lottery_number, id]
+			)
 
-        try {
-            const { id, lottery_number } = yw.body;
+			if (results.affectedRows === 0) {
+				return ir.status(404).json({ response: "Мэдээлэл олдсонгүй" })
+			}
 
-            if (!id || !lottery_number) {
-                return ir.status(400).json({ response: 'Мэдээлэл буруу байна' });
-            }
-
-            const lotteryRegex = /^[A-Za-z]{2}\d{6}$/;
-            if (!lotteryRegex.test(lottery_number)) {
-                return ir.status(400).json({ response: 'Сугалааны дугаарын формат буруу байна' });
-            }
-
-            const results = await query(
-                "UPDATE ebarimt.lottery SET lottery_number = ? WHERE id = ?",
-                [lottery_number, id]
-            );
-
-            if (results.affectedRows === 0) {
-                return ir.status(404).json({ response: 'Мэдээлэл олдсонгүй' });
-            }
-
-            return ir.status(200).json({ response: 'Амжилттай хадгалагдлаа' });
-        } catch (error) {
-            ir.status(500).json({ response: error.message });
-        }
-
-    }
+			return ir.status(200).json({ response: "Амжилттай хадгалагдлаа" })
+		} catch (error) {
+			ir.status(500).json({ response: error.message })
+		}
+	},
 }
