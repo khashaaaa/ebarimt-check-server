@@ -1,47 +1,63 @@
+/**
+ * Application Initialization Script
+ * Author: Khashkhuu
+ * Description: This script initializes and configures an Express.js application
+ * with enhanced security and middleware support. It connects to a MongoDB database
+ * and starts the server.
+ */
+
 require("dotenv").config()
-const engine = require("express")
-const prog = engine()
+const express = require("express")
+const app = express()
 const cors = require("cors")
-const { connector } = require("./engine/config/connector")
+const helmet = require("helmet")
+const xss = require("xss-clean")
+const { connectDB } = require("./engine/config/connector")
 
-const { LotteryCheckRouter } = require("./engine/route/lottery.route")
+// Import routers
 const { BarimtRouter } = require("./engine/route/barimt.route")
+const { OrgRouter } = require("./engine/route/org.route")
 
-prog.use(cors())
-prog.use(engine.json({ limit: "50mb" }))
-prog.use(
-	engine.urlencoded({ extended: true, limit: "50mb", parameterLimit: 100000 })
+// Security and parsing middlewares
+app.use(cors())
+app.use(helmet())
+app.use(xss())
+app.use(express.json({ limit: "50mb" }))
+app.use(
+	express.urlencoded({
+		extended: true,
+		limit: "50mb",
+		parameterLimit: 100000,
+	})
 )
 
-prog.use("/lottery", LotteryCheckRouter)
-prog.use("/barimt", BarimtRouter)
+// Route configurations
+app.use("/barimt", BarimtRouter)
+app.use("/org", OrgRouter)
 
+// Start server
 const startServer = async () => {
 	try {
-		if (!process.env.PROG_PORT || !process.env.PROG_HOST) {
+		// Validate required environment variables
+		const { PROG_PORT, PROG_HOST } = process.env
+		if (!PROG_PORT || !PROG_HOST) {
 			throw new Error(
 				"Missing required environment variables: PROG_PORT or PROG_HOST"
 			)
 		}
 
-		await new Promise((resolve, reject) => {
-			connector.connect((err) => {
-				if (err) {
-					return reject(
-						new Error("MYSQL connection error: " + err.message)
-					)
-				}
-				resolve()
-			})
-		})
+		// Connect to the database
+		await connectDB()
+		console.log("MongoDB connected...")
 
-		prog.listen(process.env.PROG_PORT, () => {
+		// Start the server
+		app.listen(PROG_PORT, () => {
 			console.log(
-				`Application started on http://${process.env.PROG_HOST}:${process.env.PROG_PORT}`
+				`Application started on http://${PROG_HOST}:${PROG_PORT}`
 			)
 		})
 	} catch (error) {
-		console.error("Server startup failed: ", error.message)
+		console.error("Server startup failed:", error.message)
 		process.exit(1)
 	}
 }
