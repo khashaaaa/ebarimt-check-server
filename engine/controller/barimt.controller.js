@@ -140,6 +140,41 @@ module.exports = {
 		}
 	},
 
+	searchBarimt: async (yw, ir) => {
+		try {
+			const { receiptno } = yw.body
+
+			if (!receiptno) {
+				return ir
+					.status(BAD_REQUEST.code)
+					.json({ response: BAD_REQUEST.message })
+			}
+
+			const db = getDB()
+			const collection = db.collection("barimt")
+
+			const result = await collection.findOne({
+				receiptno,
+			})
+
+			if (!result) {
+				return ir
+					.status(NOT_FOUND.code)
+					.json({ response: NOT_FOUND.message })
+			}
+
+			return ir.status(200).json({ response: result })
+		} catch (error) {
+			if (error.name === "BSONTypeError") {
+				return ir
+					.status(BAD_REQUEST.code)
+					.json({ response: BAD_REQUEST.message })
+			}
+
+			return ir.status(500).json({ response: error.message })
+		}
+	},
+
 	deleteBarimt: async (yw, ir) => {
 		try {
 			const { id } = yw.params

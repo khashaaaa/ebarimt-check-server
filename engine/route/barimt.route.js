@@ -6,12 +6,14 @@ const {
 	checkLotteryNumber,
 	insertLotteryNumber,
 	combineBarimtAmount,
+	searchBarimt,
 } = require("../controller/barimt.controller")
 
 const BarimtRouter = Router()
 
 BarimtRouter.post("/create", createBarimt)
 BarimtRouter.post("/find", findBarimt)
+BarimtRouter.post("/search", searchBarimt)
 BarimtRouter.post("/combine", combineBarimtAmount)
 BarimtRouter.post("/lottery/check", checkLotteryNumber)
 BarimtRouter.post("/lottery/insert", insertLotteryNumber)
