@@ -1,4 +1,4 @@
-const { getDB } = require("../config/connector")
+const { MongoInit } = require("../config/connector")
 const { ObjectId } = require("mongodb")
 const { BAD_REQUEST, NOT_FOUND } = require("../constant/response")
 
@@ -19,7 +19,7 @@ module.exports = {
 					.json({ response: BAD_REQUEST.message })
 			}
 
-			const db = getDB()
+			const db = MongoInit()
 			const collection = db.collection("barimt")
 
 			const result = await collection.insertOne(barimtData)
@@ -45,7 +45,7 @@ module.exports = {
 					.json({ response: BAD_REQUEST.message })
 			}
 
-			const db = getDB()
+			const db = MongoInit()
 			const collection = db.collection("barimt")
 
 			const result = await collection.findOne({
@@ -84,7 +84,7 @@ module.exports = {
 					.json({ response: BAD_REQUEST.message })
 			}
 
-			const db = getDB()
+			const db = MongoInit()
 			const collection = db.collection("barimt")
 
 			const result = await collection.updateOne(
@@ -114,7 +114,7 @@ module.exports = {
 					.json({ response: BAD_REQUEST.message })
 			}
 
-			const db = getDB()
+			const db = MongoInit()
 			const collection = db.collection("barimt")
 
 			const result = await collection.findOne({
@@ -150,7 +150,7 @@ module.exports = {
 					.json({ response: BAD_REQUEST.message })
 			}
 
-			const db = getDB()
+			const db = MongoInit()
 			const collection = db.collection("barimt")
 
 			const result = await collection.findOne({
@@ -185,7 +185,7 @@ module.exports = {
 					.json({ response: BAD_REQUEST.message })
 			}
 
-			const db = getDB()
+			const db = MongoInit()
 			const collection = db.collection("barimt")
 
 			const result = await collection.deleteOne({ _id: new ObjectId(id) })
@@ -212,7 +212,7 @@ module.exports = {
 					.json({ response: BAD_REQUEST.message })
 			}
 
-			const db = getDB()
+			const db = MongoInit()
 			const coll = db.collection("barimt")
 
 			const agg = [

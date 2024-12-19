@@ -1,4 +1,4 @@
-const { getDB } = require("../config/connector")
+const { MongoInit } = require("../config/connector")
 const axios = require("axios")
 const { NOT_FOUND, BAD_REQUEST } = require("../constant/response")
 
@@ -51,7 +51,7 @@ module.exports = {
 					.json({ response: BAD_REQUEST.message })
 			}
 
-			const db = getDB()
+			const db = MongoInit()
 			const collection = db.collection("bgf_hq_bizloc_mst")
 
 			const result = await collection.insertOne(branch)
@@ -77,7 +77,7 @@ module.exports = {
 					.json({ response: BAD_REQUEST.message })
 			}
 
-			const db = getDB()
+			const db = MongoInit()
 			const collection = db.collection("bgf_hq_bizloc_mst")
 
 			const regResponse = await collection.findOne({ bizloc_cd })
