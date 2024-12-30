@@ -3,6 +3,7 @@ const { hashPassword } = require("../middleware/crypt")
 const { CREATED, SUCCESS } = require("../constant/response")
 const bcrypt = require("bcrypt")
 const jwt = require("jsonwebtoken")
+const { Access } = require("../model/access.model")
 
 module.exports = {
 	login: async (yw, ir) => {
@@ -25,12 +26,14 @@ module.exports = {
 					.json({ message: "Нууц үг буруу байна.", success: false })
 			}
 
+			const access = await Access.findOne({ where: { user_id: user.id } })
+
 			const token = jwt.sign(
 				{
-					userId: user.id,
-					email: user.email,
+					user: user,
+					access: access,
 				},
-				"SECRET",
+				process.env.JWT_SECRET,
 				{
 					expiresIn: "2h",
 				}
@@ -40,7 +43,6 @@ module.exports = {
 				message: "Амжилттай нэвтэрлээ",
 				success: true,
 				token,
-				user,
 			})
 		} catch (error) {
 			ir.status(500).json({ response: error.message, success: false })

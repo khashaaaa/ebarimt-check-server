@@ -5,12 +5,13 @@ const {
 	deleteAccessType,
 	showAllAccess,
 } = require("../controller/access.controller")
+const { authenticate } = require("../middleware/authenticate")
 
 const AccessRouter = Router()
 
-AccessRouter.get("/list", showAllAccess)
-AccessRouter.post("/create", createAccessType)
-AccessRouter.patch("/edit/:id", editAccessType)
-AccessRouter.delete("/delete/:id", deleteAccessType)
+AccessRouter.get("/list", authenticate, showAllAccess)
+AccessRouter.post("/create", authenticate, createAccessType)
+AccessRouter.patch("/edit/:id", authenticate, editAccessType)
+AccessRouter.delete("/delete/:id", authenticate, deleteAccessType)
 
 module.exports = { AccessRouter }

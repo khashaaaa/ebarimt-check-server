@@ -12,6 +12,8 @@ const prog = express()
 const cors = require("cors")
 const helmet = require("helmet")
 const xss = require("xss-clean")
+const { logSaver } = require("./engine/middleware/logsaver")
+const { logger } = require("./engine/middleware/logger")
 
 const { MysqlConnect } = require("./engine/config/connector")
 const { MongoConnect } = require("./engine/config/connector")
@@ -23,6 +25,7 @@ const { AccessRouter } = require("./engine/route/access.route")
 
 const { Access } = require("./engine/model/access.model")
 const { User } = require("./engine/model/user.model")
+const { Log } = require("./engine/model/log.model")
 
 prog.use(cors())
 prog.use(helmet())
@@ -35,11 +38,21 @@ prog.use(
 		parameterLimit: 100000,
 	})
 )
+prog.use(logSaver)
 
 prog.use("/barimt", BarimtRouter)
 prog.use("/org", OrgRouter)
 prog.use("/user", UserRouter)
 prog.use("/access", AccessRouter)
+
+prog.use((error, req, res, next) => {
+	logger.error(error.message)
+	res.status(error.status || 500).json({
+		message: error.message,
+		error:
+			process.env.NODE_ENV === "development" ? error.message : undefined,
+	})
+})
 
 const startServer = async () => {
 	try {
@@ -59,6 +72,7 @@ const startServer = async () => {
 
 		await User.sync(mode)
 		await Access.sync(mode)
+		await Log.sync(mode)
 		console.log("Mysql tables synced...")
 
 		await MongoConnect()

@@ -4,11 +4,12 @@ const {
 	findBranch,
 	createBranch,
 } = require("../controller/org.controller")
+const { authenticate } = require("../middleware/authenticate")
 
 const OrgRouter = Router()
 
-OrgRouter.post("/find", findOrganization)
-OrgRouter.post("/branch/create", createBranch)
-OrgRouter.post("/branch/find", findBranch)
+OrgRouter.post("/find", authenticate, findOrganization)
+OrgRouter.post("/branch/create", authenticate, createBranch)
+OrgRouter.post("/branch/find", authenticate, findBranch)
 
 module.exports = { OrgRouter }

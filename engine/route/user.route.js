@@ -5,12 +5,13 @@ const {
 	showUsers,
 	deleteUser,
 } = require("../controller/user.controller")
+const { authenticate } = require("../middleware/authenticate")
 
 const UserRouter = Router()
 
-UserRouter.get("/list", showUsers)
-UserRouter.post("/create", createUser)
 UserRouter.post("/login", login)
-UserRouter.delete("/delete/:id", deleteUser)
+UserRouter.get("/list", authenticate, showUsers)
+UserRouter.post("/create", authenticate, createUser)
+UserRouter.delete("/delete/:id", authenticate, deleteUser)
 
 module.exports = { UserRouter }
