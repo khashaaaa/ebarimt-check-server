@@ -1,8 +1,8 @@
-const { User } = require("../model/user.model")
 const { hashPassword } = require("../middleware/crypt")
 const { CREATED, SUCCESS } = require("../constant/response")
 const bcrypt = require("bcrypt")
 const jwt = require("jsonwebtoken")
+const { User } = require("../model/user.model")
 const { Access } = require("../model/access.model")
 
 module.exports = {
@@ -26,7 +26,7 @@ module.exports = {
 					.json({ message: "Нууц үг буруу байна.", success: false })
 			}
 
-			const access = await Access.findOne({ where: { user_id: user.id } })
+			const access = await Access.findAll({ where: { user_id: user.id } })
 
 			const token = jwt.sign(
 				{
@@ -58,6 +58,7 @@ module.exports = {
 				phone,
 				department,
 				password,
+				user_type,
 			} = yw.body
 
 			const hashed = await hashPassword(password)
@@ -69,6 +70,7 @@ module.exports = {
 				phone,
 				department,
 				password: hashed,
+				user_type,
 			})
 
 			return ir.status(CREATED.code).json({ response: CREATED.message })

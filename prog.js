@@ -2,7 +2,7 @@
  * Application Initialization Script
  * Author: Khashkhuu
  * Description: This script initializes and configures an Express.js application
- * with enhanced security and middleware support. It connects to a MongoDB database
+ * with enhanced security and middleware support. It connects to a Postgresql, MongoDB database
  * and starts the server.
  */
 

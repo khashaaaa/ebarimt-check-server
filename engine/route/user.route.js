@@ -11,7 +11,7 @@ const UserRouter = Router()
 
 UserRouter.post("/login", login)
 UserRouter.get("/list", authenticate, showUsers)
-UserRouter.post("/create", authenticate, createUser)
+UserRouter.post("/create", createUser)
 UserRouter.delete("/delete/:id", authenticate, deleteUser)
 
 module.exports = { UserRouter }
